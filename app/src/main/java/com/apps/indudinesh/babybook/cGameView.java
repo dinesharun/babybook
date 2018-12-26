@@ -1,3 +1,11 @@
+/**
+ * Copyright 2018, Dinesh Arun Kasipandian & Indumathi Duraipandian.
+ *
+ * Part of the "Babybook" Android application (A open & free openGL based
+ * simple games aimed at toddlers.
+ *
+ */
+
 package com.apps.indudinesh.babybook;
 
 import android.content.Context;

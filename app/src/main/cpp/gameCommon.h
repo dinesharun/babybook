@@ -1,11 +1,16 @@
-//
-// Created by Indumathi Dinesh on 24/12/18.
-//
+/**
+ * Copyright 2018, Dinesh Arun Kasipandian & Indumathi Duraipandian.
+ *
+ * Part of the "Babybook" Android application (A open & free openGL based
+ * simple games aimed at toddlers.
+ *
+ */
 
 #ifndef BABYBOOK_GAMECOMMON_H
 #define BABYBOOK_GAMECOMMON_H
 
 #include <stdlib.h>
+#include <jni.h>
 #include <GLES2/gl2.h>
 #include <android/log.h>
 

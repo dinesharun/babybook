@@ -18,7 +18,8 @@ add_library( # Sets the name of the library.
 
              # Provides a relative path to your source file(s).
              src/main/cpp/gameCommon.cpp
-             src/main/cpp/scribbleApp.cpp
+             src/main/cpp/scribbleApp/scribbleApp.cpp
+             src/main/cpp/rippleApp/rippleApp.cpp
              src/main/cpp/cGameView.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

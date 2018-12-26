@@ -1,6 +1,13 @@
-#include <jni.h>
-#include "gameCommon.h"
-#include "scribbleApp.h"
+/**
+ * Copyright 2018, Dinesh Arun Kasipandian & Indumathi Duraipandian.
+ *
+ * Part of the "Babybook" Android application (A open & free openGL based
+ * simple games aimed at toddlers.
+ *
+ */
+
+#include "scribbleApp/scribbleApp.h"
+#include "rippleApp/rippleApp.h"
 
 float maxWidth;
 float maxHeight;
@@ -26,6 +33,7 @@ Java_com_apps_indudinesh_babybook_cGameView_cOnDraw(
             scribbleOnDraw();
             break;
         } case GAME_RIPPLE_APP: {
+            rippleOnDraw();
             break;
         } default: {
             break;
@@ -60,6 +68,7 @@ Java_com_apps_indudinesh_babybook_cGameView_cOnTouch(
             scribbleOnTouch(fPosX, fPosY);
             break;
         } case GAME_RIPPLE_APP: {
+            rippleOnTouch(fPosX, fPosY);
             break;
         } default: {
             break;
@@ -80,4 +89,15 @@ Java_com_apps_indudinesh_babybook_cGameView_cOnInit(
 
     /* Create, compile, link and create the shaders */
     InitShaders(&pgmObj);
+
+    switch (currApp) {
+        case GAME_SCRIBBLE_APP: {
+            scribbleOnInit();
+            break;
+        } case GAME_RIPPLE_APP: {
+            break;
+        } default: {
+            break;
+        }
+    }
 }

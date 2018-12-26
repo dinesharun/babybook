@@ -1,3 +1,11 @@
+/**
+ * Copyright 2018, Dinesh Arun Kasipandian & Indumathi Duraipandian.
+ *
+ * Part of the "Babybook" Android application (A open & free openGL based
+ * simple games aimed at toddlers.
+ *
+ */
+
 package com.apps.indudinesh.babybook;
 
 import android.content.Intent;
@@ -13,9 +21,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void sendMessage(View view) {
+    public void startScribble(View view) {
         Intent intent = new Intent(this, cmnGameActivity.class);
         intent.putExtra("currApp", cmnGameActivity.gameTypes.GAME_SCRIBBLE_APP);
+        startActivity(intent);
+    }
+
+    public void startRipple(View view) {
+        Intent intent = new Intent(this, cmnGameActivity.class);
+        intent.putExtra("currApp", cmnGameActivity.gameTypes.GAME_RIPPLE_APP);
         startActivity(intent);
     }
 

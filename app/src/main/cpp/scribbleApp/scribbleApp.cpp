@@ -1,4 +1,12 @@
-#include "gameCommon.h"
+/**
+ * Copyright 2018, Dinesh Arun Kasipandian & Indumathi Duraipandian.
+ *
+ * Part of the "Babybook" Android application (A open & free openGL based
+ * simple games aimed at toddlers.
+ *
+ */
+
+#include "scribbleApp.h"
 
 float vertexPos[1000][3] = {0.0};
 GLushort vertexIdxs[1000] = {0};
@@ -32,6 +40,11 @@ void scribbleOnTouch (float fPosX, float fPosY) {
     vertexPos[currPos][2] = 0.0;
     vertexIdxs[currPos] = (GLushort)currPos;
     currPos++;
+}
+
+void scribbleOnInit() {
+    currPos = 0;
+    numTriangles = 0;
 }
 
 
