@@ -13,6 +13,7 @@
 #include <jni.h>
 #include <GLES2/gl2.h>
 #include <android/log.h>
+#include <iostream>
 
 #define  LOG_TAG    "GAME_VIEW"
 

@@ -18,7 +18,7 @@ public class cGameView extends GLSurfaceView {
     private static native void cOnDraw(int currApp);
     private static native void cOnResize(int currApp, int iWidth, int iHeight);
     private static native void cOnInit(int currApp);
-    private static native void cOnTouch(int currApp, float fPosX, float fPosY);
+    private static native void cOnTouch(int currApp, float fPosX, float fPosY,boolean release);
 
     private static cmnGameActivity.gameTypes currApp = cmnGameActivity.gameTypes.GAME_MAXIMUM;
 
@@ -34,8 +34,8 @@ public class cGameView extends GLSurfaceView {
         public void onSurfaceCreated(GL10 gl, EGLConfig config) { cOnInit(currApp.ordinal()); }
     }
 
-    public void onTouch(float fPosX, float fPosY) {
-        cOnTouch(currApp.ordinal(), fPosX, fPosY);
+    public void onTouch(float fPosX, float fPosY,boolean release) {
+        cOnTouch(currApp.ordinal(), fPosX, fPosY,release);
         requestRender();
     }
 

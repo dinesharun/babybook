@@ -61,11 +61,12 @@ Java_com_apps_indudinesh_babybook_cGameView_cOnTouch(
         jobject /* this */,
         jint currApp,
         jfloat fPosX,
-        jfloat fPosY) {
+        jfloat fPosY,
+        jboolean release) {
 
     switch (currApp) {
         case GAME_SCRIBBLE_APP: {
-            scribbleOnTouch(fPosX, fPosY);
+            scribbleOnTouch(fPosX, fPosY,release);
             break;
         } case GAME_RIPPLE_APP: {
             rippleOnTouch(fPosX, fPosY);

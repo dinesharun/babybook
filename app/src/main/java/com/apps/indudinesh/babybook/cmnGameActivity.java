@@ -53,8 +53,13 @@ public class cmnGameActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
+        int action = e.getActionMasked();
+        boolean release = false;
+        if (action == MotionEvent.ACTION_UP) {
+            release = true;
+        }
         super.onTouchEvent(e);
-        mGLView.onTouch(e.getX(), e.getY());
+        mGLView.onTouch(e.getX(), e.getY(),release);
         return true;
     }
 
