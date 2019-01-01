@@ -9,7 +9,7 @@
 #ifndef BABYBOOK_SCRIBBLEAPP_H
 #define BABYBOOK_SCRIBBLEAPP_H
 
-#include "../gameCommon.h"
+#include "../utils/gameCommon.h"
 
 void scribbleOnDraw(void);
 void scribbleOnTouch (float fPosX, float fPosY,bool release);

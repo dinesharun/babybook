@@ -14,10 +14,15 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * A simple scribble pad.
  */
 public class cmnGameActivity extends AppCompatActivity {
+
+    private static native void cTimerTask(int currApp);
 
     public enum gameTypes {
         GAME_SCRIBBLE_APP,
@@ -28,6 +33,8 @@ public class cmnGameActivity extends AppCompatActivity {
      * C++ NDK gameView wrapper.
      */
     private cGameView mGLView;
+    private Timer animTimer;
+    private TimerTask timerTask;
     private gameTypes currApp = gameTypes.GAME_MAXIMUM;
 
     /**
@@ -49,6 +56,16 @@ public class cmnGameActivity extends AppCompatActivity {
          */
         mGLView = new cGameView(this, currApp);
         setContentView(mGLView);
+
+        /* Create, init and start the timer */
+        animTimer = new Timer();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                cTimerTask(currApp.ordinal());
+            }
+        };
+        animTimer.schedule(timerTask, 100, 100);
     }
 
     @Override
@@ -66,6 +83,8 @@ public class cmnGameActivity extends AppCompatActivity {
     @Override
     protected void onPause()
     {
+        //animTimer.purge();
+        //animTimer.cancel();
         super.onPause();
         mGLView.onPause();
     }
@@ -73,6 +92,7 @@ public class cmnGameActivity extends AppCompatActivity {
     @Override
     protected void onResume()
     {
+        //animTimer.schedule(timerTask, 300, 300);
         super.onResume();
         mGLView.onResume();
     }

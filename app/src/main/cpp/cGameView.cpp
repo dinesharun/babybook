@@ -11,8 +11,9 @@
 
 float maxWidth;
 float maxHeight;
+float aspectRatio;
 
-static GLuint pgmObj;
+GLuint pgmObj;
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_apps_indudinesh_babybook_cGameView_cOnDraw(
@@ -22,6 +23,8 @@ Java_com_apps_indudinesh_babybook_cGameView_cOnDraw(
 
     /* Use the program object */
     glUseProgram ( pgmObj );
+
+    setOrthoProjection();
 
     /* Clear once again  */
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -52,7 +55,25 @@ Java_com_apps_indudinesh_babybook_cGameView_cOnResize(
     /* Set the sizes as required */
     maxWidth = (float)iWidth;
     maxHeight = (float)iHeight;
+    aspectRatio = maxHeight / maxWidth;
     glViewport(0, 0, iWidth, iHeight);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_apps_indudinesh_babybook_cmnGameActivity_cTimerTask(
+        JNIEnv* env,
+        jobject /* this */,
+        jint currApp) {
+    switch (currApp) {
+        case GAME_SCRIBBLE_APP: {
+            break;
+        } case GAME_RIPPLE_APP: {
+            rippleTimerTask();
+            break;
+        } default: {
+            break;
+        }
+    }
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -96,6 +117,7 @@ Java_com_apps_indudinesh_babybook_cGameView_cOnInit(
             scribbleOnInit();
             break;
         } case GAME_RIPPLE_APP: {
+            rippleOnInit();
             break;
         } default: {
             break;

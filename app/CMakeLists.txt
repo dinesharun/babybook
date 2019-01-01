@@ -17,7 +17,9 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/gameCommon.cpp
+             src/main/cpp/utils/misc.cpp
+             src/main/cpp/utils/matrix.cpp
+             src/main/cpp/utils/gameCommon.cpp
              src/main/cpp/scribbleApp/scribbleApp.cpp
              src/main/cpp/rippleApp/rippleApp.cpp
              src/main/cpp/cGameView.cpp)
