@@ -9,6 +9,7 @@
 #include "gameCommon.h"
 
 static void drawLoop(renderData* d, float x, float y, float z, shapeInfo s, GLbyte resolution);
+static void drawThickLoop(renderData* d, float x, float y, float z, shapeInfo s, GLbyte resolution);
 static void drawFilledLoop(renderData* d, float x, float y, float z, shapeInfo s, GLbyte resolution);
 
 GLuint LoadShader ( GLenum type, const GLchar* const shaderSrc )
@@ -140,9 +141,8 @@ GLushort getNextFreeFragment(fragmentInfo* pFragments, GLushort maxFragments) {
 }
 
 void setOrthoProjection() {
-    int mvpLoc = -1;
+    int mvpLoc;
     PMAT mvpMatrix;
-    float min = ((maxWidth <= maxHeight)?(maxWidth):(maxHeight));
 
     /* Set the MVP matrix */
     if ((mvpLoc = glGetUniformLocation(pgmObj, "vMVPMatrix")) >= 0) {
@@ -175,12 +175,20 @@ void drawFilledCircle(renderData* d, float x, float y, float z, shapeInfo s) {
     drawFilledLoop(d, x, y, z, s, 32);
 }
 
+void drawThickCircle(renderData* d, float x, float y, float z, shapeInfo s) {
+    drawThickLoop(d, x, y, z, s, 32);
+}
+
 void drawCircle(renderData* d, float x, float y, float z, shapeInfo s) {
     drawLoop(d, x, y, z, s, 32);
 }
 
 void drawFilledDiamond(renderData* d, float x, float y, float z, shapeInfo s) {
     drawFilledLoop(d, x, y, z, s, 4);
+}
+
+void drawThickDiamond(renderData* d, float x, float y, float z, shapeInfo s) {
+    drawThickLoop(d, x, y, z, s, 4);
 }
 
 void drawDiamond(renderData* d, float x, float y, float z, shapeInfo s) {
@@ -191,12 +199,20 @@ void drawFilledPentagon(renderData* d, float x, float y, float z, shapeInfo s) {
     drawFilledLoop(d, x, y, z, s, 8);
 }
 
+void drawThickPentagon(renderData* d, float x, float y, float z, shapeInfo s) {
+    drawThickLoop(d, x, y, z, s, 8);
+}
+
 void drawPentagon(renderData* d, float x, float y, float z, shapeInfo s) {
     drawLoop(d, x, y, z, s, 8);
 }
 
 void drawFilledHexagon(renderData* d, float x, float y, float z, shapeInfo s) {
     drawFilledLoop(d, x, y, z, s, 8);
+}
+
+void drawThickHexagon(renderData* d, float x, float y, float z, shapeInfo s) {
+    drawThickLoop(d, x, y, z, s, 8);
 }
 
 void drawHexagon(renderData* d, float x, float y, float z, shapeInfo s) {
@@ -210,32 +226,80 @@ static void drawLoop(renderData* d, float x, float y, float z, shapeInfo s, GLby
         resolution = 4u;
     }
 
-    int fragmentIdx = d->maxFragments;
+    int fragmentIdx;
 
     /* If free fragment space available */
     if((fragmentIdx = getNextFreeFragment(&d->fragments[0], d->maxFragments)) < d->maxFragments) {
-        /* Set fragment version */
+        /* Set fragment basic parameters */
         d->fragments[fragmentIdx].valid = GL_TRUE;
         d->fragments[fragmentIdx].drawMode = GL_LINE_LOOP;
         d->fragments[fragmentIdx].startVertexIdx = d->currVertexIdx;
         d->fragments[fragmentIdx].numTriangles = (GLushort)(0u);
         d->fragments[fragmentIdx].numVertices = (GLushort)(resolution);
 
-
+        /* For the given resolution */
         for (int i = 0; i < resolution; i++) {
-            /* Add outer vertices */
+            /* Add outer vertices of the loop at every spoke of the resolution */
             d->vertices[d->currVertexIdx].position[0] =
                     SCREEN_TO_PLANE_X(x) + (s.radius * (sin((float) (2.0 * M_PI * ((float)i / (float)resolution)))));
             d->vertices[d->currVertexIdx].position[1] =
                     SCREEN_TO_PLANE_Y(y) + (s.radius * (cos((float) (2.0 * M_PI * ((float)i / (float)resolution)))));
-            d->vertices[d->currVertexIdx].position[2] = 0.0;
-            d->vertices[d->currVertexIdx].color[0] = (GLubyte) (s.color & 0x000000ffu);
-            d->vertices[d->currVertexIdx].color[1] = (GLubyte) ((s.color & 0x0000ff00u) >> 8);
-            d->vertices[d->currVertexIdx].color[2] = (GLubyte) ((s.color & 0x00ff0000u) >> 16);
-            d->vertices[d->currVertexIdx].color[3] = (GLubyte) (0xffu);
+            d->vertices[d->currVertexIdx].position[2] = z;
+            /* Derive vertex colors from the given color */
+            d->vertices[d->currVertexIdx].color[0] =  ((s.color & 0x000000ffu) / 255.0f);
+            d->vertices[d->currVertexIdx].color[1] =  (((s.color & 0x0000ff00u) >> 8) / 255.0f);
+            d->vertices[d->currVertexIdx].color[2] =  (((s.color & 0x00ff0000u) >> 16) / 255.0f);
+            d->vertices[d->currVertexIdx].color[3] =  ((0xffu) / 255.0f);
+            /* Set vertex index and move to next vertex */
             d->vertexIndices[d->currVertexIdx] = (GLushort) d->currVertexIdx;
             d->currVertexIdx++;
         }
+    }
+}
+
+static void drawThickLoop(renderData* d, float x, float y, float z, shapeInfo s, GLbyte resolution) {
+    /* Resolution is to be a power of 2 and should be at-least 4*/
+    if((resolution < 4u) || ((resolution) & (resolution - 1u))) {
+        /* When not set resolution to 4 (minimum) */
+        resolution = 4u;
+    }
+
+    int fragmentIdx;
+
+    /* If free fragment space available */
+    if((fragmentIdx = getNextFreeFragment(&d->fragments[0], d->maxFragments)) < d->maxFragments) {
+        /* Set fragment basic parameters */
+        d->fragments[fragmentIdx].valid = GL_TRUE;
+        d->fragments[fragmentIdx].drawMode = GL_TRIANGLE_STRIP;
+        d->fragments[fragmentIdx].startVertexIdx = d->currVertexIdx;
+        d->fragments[fragmentIdx].numTriangles = (GLushort)(0u);
+        d->fragments[fragmentIdx].numVertices = (GLushort)((resolution + 1u) * 2u);
+
+        /* For the given resolution */
+        for (int i = 0; i < resolution; i++) {
+            /* For the outer and inner shell of the loop */
+            for(int j = 1; j >= 0; j--) {
+                /* Add outer vertices of the loop at every spoke of the resolution */
+                d->vertices[d->currVertexIdx].position[0] =
+                        SCREEN_TO_PLANE_X(x) +
+                        ((s.radius + (s.thickness * j)) * (sin((float) (2.0 * M_PI * ((float) i / (float) resolution)))));
+                d->vertices[d->currVertexIdx].position[1] =
+                        SCREEN_TO_PLANE_Y(y) +
+                        ((s.radius + (s.thickness * j)) * (cos((float) (2.0 * M_PI * ((float) i / (float) resolution)))));
+                d->vertices[d->currVertexIdx].position[2] = z;
+                /* Derive the color of the vertex from the given color */
+                d->vertices[d->currVertexIdx].color[0] =  ((s.color & 0x000000ffu) / 255.0f);
+                d->vertices[d->currVertexIdx].color[1] =  (((s.color & 0x0000ff00u) >> 8) / 255.0f);
+                d->vertices[d->currVertexIdx].color[2] =  (((s.color & 0x00ff0000u) >> 16) / 255.0f);
+                d->vertices[d->currVertexIdx].color[3] =  ((0xffu) / 255.0f);
+                /* Set current vertex index and move to next vertex */
+                d->vertexIndices[d->currVertexIdx] = (GLushort) d->currVertexIdx;
+                d->currVertexIdx++;
+            }
+        }
+
+        d->vertexIndices[d->currVertexIdx++] = d->fragments[fragmentIdx].startVertexIdx;
+        d->vertexIndices[d->currVertexIdx++] = d->fragments[fragmentIdx].startVertexIdx + (GLushort)1u;
     }
 }
 
@@ -246,39 +310,44 @@ static void drawFilledLoop(renderData* d, float x, float y, float z, shapeInfo s
         resolution = 4u;
     }
 
-    int fragmentIdx = d->maxFragments;
+    int fragmentIdx;
 
     /* If free fragment space available */
     if((fragmentIdx = getNextFreeFragment(&d->fragments[0], d->maxFragments)) < d->maxFragments) {
-        /* Set fragment version */
+        /* Set fragment basic parameters */
         d->fragments[fragmentIdx].valid = GL_TRUE;
         d->fragments[fragmentIdx].drawMode = GL_TRIANGLE_FAN;
         d->fragments[fragmentIdx].startVertexIdx = d->currVertexIdx;
         d->fragments[fragmentIdx].numTriangles = (GLushort)(resolution);
         d->fragments[fragmentIdx].numVertices = (GLushort)(resolution + 2u);
 
-        /* Add center vertex */
+        /* Add center vertex position */
         d->vertices[d->currVertexIdx].position[0] = SCREEN_TO_PLANE_X(x);
         d->vertices[d->currVertexIdx].position[1] = SCREEN_TO_PLANE_Y(y);
-        d->vertices[d->currVertexIdx].position[2] = 0.0;
-        d->vertices[d->currVertexIdx].color[0] = (GLubyte) (s.color & 0x000000ffu);
-        d->vertices[d->currVertexIdx].color[1] = (GLubyte) ((s.color & 0x0000ff00u) >> 8);
-        d->vertices[d->currVertexIdx].color[2] = (GLubyte) ((s.color & 0x00ff0000u) >> 16);
-        d->vertices[d->currVertexIdx].color[3] = (GLubyte) (0xffu);
+        d->vertices[d->currVertexIdx].position[2] = z;
+        /* Set center vertex color */
+        d->vertices[d->currVertexIdx].color[0] =  ((s.color & 0x000000ffu) / 255.0f);
+        d->vertices[d->currVertexIdx].color[1] =  (((s.color & 0x0000ff00u) >> 8) / 255.0f);
+        d->vertices[d->currVertexIdx].color[2] =  (((s.color & 0x00ff0000u) >> 16) / 255.0f);
+        d->vertices[d->currVertexIdx].color[3] =  ((0xffu) / 255.0f);
+        /* Set center vertex position and move to next vertex */
         d->vertexIndices[d->currVertexIdx] = (GLushort) d->currVertexIdx;
         d->currVertexIdx++;
 
+        /* For the given resolution */
         for (int i = 0; i <= resolution; i++) {
-            /* Add outer vertices */
+            /* Add outer vertices at every spoke of the resolution */
             d->vertices[d->currVertexIdx].position[0] =
                     SCREEN_TO_PLANE_X(x) + (s.radius * (sin((float) (2.0 * M_PI * ((float)i / (float)resolution)))));
             d->vertices[d->currVertexIdx].position[1] =
                     SCREEN_TO_PLANE_Y(y) + (s.radius * (cos((float) (2.0 * M_PI * ((float)i / (float)resolution)))));
-            d->vertices[d->currVertexIdx].position[2] = 0.0;
-            d->vertices[d->currVertexIdx].color[0] = (GLubyte) (s.color & 0x000000ffu);
-            d->vertices[d->currVertexIdx].color[1] = (GLubyte) ((s.color & 0x0000ff00u) >> 8);
-            d->vertices[d->currVertexIdx].color[2] = (GLubyte) ((s.color & 0x00ff0000u) >> 16);
-            d->vertices[d->currVertexIdx].color[3] = (GLubyte) (0xffu);
+            d->vertices[d->currVertexIdx].position[2] = z;
+            /* Derive the vertex color from the given color */
+            d->vertices[d->currVertexIdx].color[0] =  ((s.color & 0x000000ffu) / 255.0f);
+            d->vertices[d->currVertexIdx].color[1] =  (((s.color & 0x0000ff00u) >> 8) / 255.0f);
+            d->vertices[d->currVertexIdx].color[2] =  (((s.color & 0x00ff0000u) >> 16) / 255.0f);
+            d->vertices[d->currVertexIdx].color[3] =  ((0xffu) / 255.0f);
+            /* Set vertex position and move to next vertex */
             d->vertexIndices[d->currVertexIdx] = (GLushort) d->currVertexIdx;
             d->currVertexIdx++;
         }

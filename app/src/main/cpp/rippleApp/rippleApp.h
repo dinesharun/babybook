@@ -20,14 +20,15 @@
 #define RIPPLE_SHAPE_PENTAGON (3)
 
 #define RIPPLE_MAX_OBJECTS    (100)
-#define RIPPLE_MAX_STEPS      (30)
-#define RIPPLE_MAX_WAVES      (12)
+#define RIPPLE_MAX_WAVES      (30)
+#define RIPPLE_MAX_STEPS      (RIPPLE_MAX_WAVES * 2u)
 
 typedef struct {
     float x;
     float y;
     float baseRadius;
     float stepRadius;
+    float baseThickness;
     GLuint color;
     GLushort currStep;
     GLubyte  shape;

@@ -39,7 +39,7 @@ typedef enum {
 
 typedef struct {
     float position[3];
-    GLubyte color[4];
+    float color[4];
 } verticeInfo;
 
 typedef struct {
@@ -64,6 +64,7 @@ typedef struct {
     float radius;
     float width;
     float height;
+    float thickness;
     GLuint color;
     GLubyte colorMode;
 } shapeInfo;
@@ -79,6 +80,11 @@ void drawCircle(renderData* d, float x, float y, float z, shapeInfo s);
 void drawDiamond(renderData* d, float x, float y, float z, shapeInfo s);
 void drawPentagon(renderData* d, float x, float y, float z, shapeInfo s);
 void drawHexagon(renderData* d, float x, float y, float z, shapeInfo s);
+
+void drawThickCircle(renderData* d, float x, float y, float z, shapeInfo s);
+void drawThickDiamond(renderData* d, float x, float y, float z, shapeInfo s);
+void drawThickPentagon(renderData* d, float x, float y, float z, shapeInfo s);
+void drawThickHexagon(renderData* d, float x, float y, float z, shapeInfo s);
 
 void drawFilledCircle(renderData* d, float x, float y, float z, shapeInfo s);
 void drawFilledDiamond(renderData* d, float x, float y, float z, shapeInfo s);
